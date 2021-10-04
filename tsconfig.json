@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"declaration": true,
+		"experimentalDecorators": true,
+		"removeComments": true,
+		"outDir": "dist",
+	},
+	"include": [
+		"src/**/*.ts"
+	]
+}
