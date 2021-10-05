@@ -31,6 +31,10 @@ const start = async () => {
 		return ctx.reply('Welcome to the bot!');
 	});
 
+	bot.command('/updates', (ctx) => {
+
+	})
+
 
 	bot.command('/now', async (ctx) => {
 		if (ctx.session.bbvaUser) {
@@ -59,16 +63,15 @@ const start = async () => {
 	bot.on('text', (ctx) => {
 		const text = ctx.message.text;
 
-		if (text === process.env.BBVA_USER || ctx.session.bbvaUser === process.env.BBVA_USER) {
+		if (text === process.env.BBVA_USER) {
 			ctx.session.bbvaUser = text;
+		}
 
-			ctx.reply('Welcome!',
+		if (ctx.session.bbvaUser === process.env.BBVA_USER) {
+			return ctx.reply('What do you need?',
 			Markup.keyboard(['/now', '/updates'])
-				.oneTime()
 				.resize()
 			);
-
-			return ctx.reply('Welcome to the bot!');
 		}
 
 		return ctx.reply(`You said: ${text}`);
