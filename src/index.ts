@@ -1,7 +1,7 @@
 import { Scrapper } from './scrapper';
 import { Telegraf, Context as TelegrafContext, Markup } from 'telegraf';
 import process from 'process';
-import { clear } from 'console';
+import { createHmac } from 'crypto';
 const LocalSession = require('telegraf-session-local');
 
 declare global {
@@ -10,15 +10,24 @@ declare global {
 			BBVA_USER: string;
 			BBVA_PASSWORD: string;
 			TELEGRAM_TOKEN: string;
+			SECRET: string;
 		}
 	}
 }
 
 interface MyContext extends TelegrafContext {
 	session: {
-		bbvaUser: string;
+		bbvaUser?: string;
 	}
 }
+
+const crypt = (text: string): string => {
+	return createHmac('sha256', process.env.SECRET).update(text).digest('hex');
+};
+
+const isRightUser = (user?: string): boolean => {
+	return !!user && user === crypt(process.env.BBVA_USER);
+};
 
 const start = async () => {
 	const bot = new Telegraf<MyContext>(process.env.TELEGRAM_TOKEN);
@@ -37,7 +46,7 @@ const start = async () => {
 
 
 	bot.command('/now', async (ctx) => {
-		if (ctx.session.bbvaUser) {
+		if (isRightUser(ctx.session.bbvaUser)) {
 			const message = await ctx.reply('Getting current cash...');
 
 			let count = 0;
@@ -61,20 +70,22 @@ const start = async () => {
 	});
 
 	bot.on('text', (ctx) => {
-		const text = ctx.message.text;
+		const originalText = ctx.message.text;
+		const text = crypt(ctx.message.text);
 
-		if (text === process.env.BBVA_USER) {
+		if (isRightUser(text)) {
 			ctx.session.bbvaUser = text;
 		}
 
-		if (ctx.session.bbvaUser === process.env.BBVA_USER) {
+		if (isRightUser(ctx.session.bbvaUser)) {
 			return ctx.reply('What do you need?',
-			Markup.keyboard(['/now', '/updates'])
-				.resize()
+				Markup.keyboard(['/now', '/updates'])
+					.resize()
 			);
 		}
 
-		return ctx.reply(`You said: ${text}`);
+		return ctx.reply(`You said: ${originalText}`);
+
 	});
 
 	bot.launch();
