@@ -1,26 +1,78 @@
 import { Scrapper } from './scrapper';
-import { Telegraf } from 'telegraf';
+import { Telegraf, Context as TelegrafContext, Markup } from 'telegraf';
 import process from 'process';
+import { clear } from 'console';
+const LocalSession = require('telegraf-session-local');
+
 declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
-			USER: string;
-			PASSWORD: string;
-			TELEGRAM_BOT_TOKEN: string;
+			BBVA_USER: string;
+			BBVA_PASSWORD: string;
+			TELEGRAM_TOKEN: string;
 		}
 	}
 }
 
+interface MyContext extends TelegrafContext {
+	session: {
+		bbvaUser: string;
+	}
+}
+
 const start = async () => {
-	// const process = nodeProcess as NodeJS.Process;
+	const bot = new Telegraf<MyContext>(process.env.TELEGRAM_TOKEN);
+	const session = new LocalSession({ database: './session.json' });
 
-	const scrapper = new Scrapper(process.env.USER, process.env.PASSWORD);
+	bot.use(session.middleware());
 
-	const cash = await scrapper.getAssociatedAccountCash();
+	bot.start((ctx) => {
+		ctx.session.bbvaUser = '';
+		return ctx.reply('Welcome to the bot!');
+	});
 
-	const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-	bot.start((ctx) => ctx.reply('Welcome!'));
+	bot.command('/now', async (ctx) => {
+		if (ctx.session.bbvaUser) {
+			const message = await ctx.reply('Getting current cash...');
+
+			let count = 0;
+
+			const interval = setInterval(() => {
+				ctx.telegram.editMessageText(message.chat.id, message.message_id, undefined, `Getting current cash${'.'.repeat(count)}`);
+				count++;
+			}, 500);
+
+			const scrapper = new Scrapper(process.env.BBVA_USER, process.env.BBVA_PASSWORD);
+
+			const cash = await scrapper.getAssociatedAccountCash();
+
+			clearInterval(interval);
+			ctx.telegram.deleteMessage(message.chat.id, message.message_id);
+
+			return ctx.reply(`Current ${cash}€`);
+		}
+
+		return ctx.reply('What?');
+	});
+
+	bot.on('text', (ctx) => {
+		const text = ctx.message.text;
+
+		if (text === process.env.BBVA_USER || ctx.session.bbvaUser === process.env.BBVA_USER) {
+			ctx.session.bbvaUser = text;
+
+			ctx.reply('Welcome!',
+			Markup.keyboard(['/now', '/updates'])
+				.oneTime()
+				.resize()
+			);
+
+			return ctx.reply('Welcome to the bot!');
+		}
+
+		return ctx.reply(`You said: ${text}`);
+	});
 
 	bot.launch();
 
