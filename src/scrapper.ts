@@ -11,7 +11,8 @@ export class Scrapper {
 
 	public async getAssociatedAccountCash(): Promise<Number> {
 		const browser = await playwright['chromium'].launch({
-			headless: true,
+			executablePath: process.env.RASPY ? '/usr/bin/chromium-browser' : undefined,
+			args: process.env.RASPY ? ['--no-sandbox', '--disable-setuid-sandbox']: undefined,
 		});
 		const context = await browser.newContext();
 		const page = await context.newPage();
