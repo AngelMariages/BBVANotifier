@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+  bot:
+    image: mcr.microsoft.com/playwright:focal
+    command: ["node" , "./index.js"]
+    working_dir: /usr/app/dist
+    volumes:
+      - ./dist:/usr/app/dist
+      - ./logs:/usr/app/logs
+    env_file:
+      - .env
