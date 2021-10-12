@@ -1,4 +1,4 @@
-import playwright from 'playwright';
+import { chromium } from 'playwright-chromium';
 
 export class Scrapper {
 	private readonly user: string;
@@ -10,9 +10,10 @@ export class Scrapper {
 	}
 
 	public async getAssociatedAccountCash(): Promise<Number> {
-		const browser = await playwright['chromium'].launch({
+		const browser = await chromium.launch({
 			executablePath: process.env.RASPY ? '/usr/bin/chromium-browser' : undefined,
-			args: process.env.RASPY ? ['--no-sandbox', '--disable-setuid-sandbox']: undefined,
+			chromiumSandbox: false,
+			args: ['--disable-setuid-sandbox'],
 		});
 		const context = await browser.newContext();
 		const page = await context.newPage();
