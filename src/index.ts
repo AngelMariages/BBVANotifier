@@ -5,6 +5,9 @@ import { createHmac } from 'crypto';
 import { config } from 'dotenv';
 import { Intervals, MyContext } from './types';
 import { openSync, writeFileSync } from 'fs';
+
+import fastify from 'fastify';
+
 const LocalSession = require('telegraf-session-local');
 
 const crypt = (text: string): string => {
@@ -62,7 +65,7 @@ const waitForLongTask = async <T extends any>(text: string, ctx: Context, task: 
 	return result;
 };
 
-const start = async () => {
+const getBot = async (): Promise<Telegraf<MyContext>> => {
 	importConfig();
 
 	const bot = new Telegraf<MyContext>(process.env.TELEGRAM_TOKEN);
@@ -166,11 +169,45 @@ const start = async () => {
 
 	});
 
-	bot.launch();
-
 	process.on('SIGINT', () => bot.stop('SIGINT'));
 	process.on('SIGTERM', () => bot.stop('SIGTERM'));
+
+	return bot;
 };
 
+const startWebHook = async (bot: Telegraf<MyContext>) => {
+	const fast = fastify({ logger: true });
 
-(async () => await start())();
+	fast.get('/', async (request, reply) => {
+		reply.send({ hello: 'world' });
+	});
+
+	const SECRET_PATH = `/telegraf/${bot.secretPathComponent()}`
+
+	fast.post(SECRET_PATH, (req, rep) => {
+		// @ts-ignore
+		bot.handleUpdate(req.body, rep.raw)
+	})
+
+	try {
+		await fast.listen(8080);
+	} catch (err) {
+		fast.log.error(err);
+		process.exit(1);
+	}
+
+	bot.launch({
+		webhook: {
+			domain: 'https://bbva-notifier.herokuapp.com/',
+			port: 8080,
+		},
+	});
+
+	process.on('SIGINT', () => fast.close());
+	process.on('SIGTERM', () => fast.close());
+};
+
+(async () => {
+	const bot = await getBot();
+	await startWebHook(bot);
+})();
