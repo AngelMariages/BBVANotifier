@@ -201,7 +201,7 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 	bot.launch({
 		webhook: {
 			domain: 'https://bbva-notifier.herokuapp.com/',
-			port,
+			port: 443,
 		},
 	});
 
