@@ -187,10 +187,12 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 	fast.post(SECRET_PATH, (req, rep) => {
 		// @ts-ignore
 		bot.handleUpdate(req.body, rep.raw)
-	})
+	});
+
+	const port = process.env.PORT || 8080;
 
 	try {
-		await fast.listen(8080);
+		await fast.listen(port);
 	} catch (err) {
 		fast.log.error(err);
 		process.exit(1);
@@ -199,7 +201,7 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 	bot.launch({
 		webhook: {
 			domain: 'https://bbva-notifier.herokuapp.com/',
-			port: 8080,
+			port,
 		},
 	});
 

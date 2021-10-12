@@ -7,6 +7,7 @@ declare global {
 			BBVA_PASSWORD: string;
 			TELEGRAM_TOKEN: string;
 			SECRET: string;
+			PORT?: number;
 		}
 	}
 }
