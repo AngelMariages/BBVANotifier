@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "bbva notifier",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node --trace-warnings dist/index.js",
+    "start:dev": "ts-node src/index.ts",
     "build": "ncc build src/index.ts -m"
   },
   "repository": {
