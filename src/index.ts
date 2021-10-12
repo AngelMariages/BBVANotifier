@@ -192,20 +192,14 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 	const port = process.env.PORT || 8080;
 
 	try {
+		await bot.telegram.setWebhook(`https://bbva-notifier.herokuapp.com/${SECRET_PATH}`);
+		console.log('Webhook set');
+
 		await fast.listen(port);
 	} catch (err) {
 		fast.log.error(err);
 		process.exit(1);
 	}
-
-	// bot.launch({
-	// 	webhook: {
-	// 		domain: 'https://bbva-notifier.herokuapp.com/',
-	// 		port: 443,
-	// 	},
-	// });
-
-	bot.telegram.setWebhook(`https://bbva-notifier.herokuapp.com/${SECRET_PATH}`);
 
 	process.on('SIGINT', () => fast.close());
 	process.on('SIGTERM', () => fast.close());
