@@ -7,7 +7,7 @@
     "start:dev": "NODE_ENV=debug ts-node src/index.ts",
     "start:heroku": "ts-node src/index.ts",
     "heroku-cleanup": "npx playwright install",
-    "heroku-build": "",
+    "heroku-build": "echo 'No build in Heroku'",
     "build": "ncc build src/index.ts -m"
   },
   "repository": {
