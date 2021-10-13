@@ -2,6 +2,7 @@ import { ServerResponse } from 'http';
 import { Markup, Telegraf, Context } from 'telegraf';
 import RedisSession from 'telegraf-session-redis';
 import { Message, Update } from 'typegram';
+import { SIX_HOURS } from './constants';
 import IntervalHandler from './intervals';
 import { debug } from './logging';
 import { Scrapper } from './scrapper';
