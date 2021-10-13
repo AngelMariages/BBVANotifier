@@ -196,7 +196,7 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 		await bot.telegram.setWebhook(`${url}${SECRET_PATH}`);
 		console.log('Webhook set');
 
-		await fast.listen(port);
+		await fast.listen(port, '0.0.0.0');
 	} catch (err) {
 		fast.log.error(err);
 		process.exit(1);
