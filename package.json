@@ -6,7 +6,7 @@
     "start": "node --unhandled-rejections=strict dist/index.js",
     "start:dev": "ts-node src/index.ts",
     "build": "ncc build src/index.ts -m",
-    "heroku-cleanup": "npx playwright install"
+    "heroku-cleanup": "npx playwright install-deps chromium && npx playwright install chromium"
   },
   "repository": {
     "type": "git",
