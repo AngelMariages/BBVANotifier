@@ -15,7 +15,7 @@ declare global {
 export interface MyContext extends TelegrafContext {
 	session: {
 		bbvaUser?: string;
-	}
+	} | null
 }
 
 export interface Intervals {
