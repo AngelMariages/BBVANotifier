@@ -40,11 +40,13 @@ const LOG_FILE_PATH = `${__dirname}/../logs/${Date.now()}.log`
 const LOG_FILE = openSync(LOG_FILE_PATH, 'w');
 
 const debug = (action: string, telegramMessage: object, ...content: string[]) => {
-	const timestamp = new Date().toISOString();
+	if (process.argv[2] === '--debug') {
+		const timestamp = new Date().toISOString();
 
-	writeFileSync(LOG_FILE, `[${timestamp}] - ${action}: ${content.join(' ')} ${JSON.stringify(telegramMessage, null, 4)}\n\n`);
-	console.log(`[${timestamp}] - ${fgGreen}${action}${reset}:`, ...content);
-	console.dir(telegramMessage);
+		writeFileSync(LOG_FILE, `[${timestamp}] - ${action}: ${content.join(' ')} ${JSON.stringify(telegramMessage, null, 4)}\n\n`);
+		console.log(`[${timestamp}] - ${fgGreen}${action}${reset}:`, ...content);
+		console.dir(telegramMessage);
+	}
 };
 
 const waitForLongTask = async <T extends any>(text: string, ctx: Context, task: Promise<T>): Promise<T> => {

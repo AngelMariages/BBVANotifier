@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "bbva notifier",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "heroku-cleanup": "npx playwright install"
+    "start": "node --unhandled-rejections=strict dist/index.js",
+    "start:dev": "ts-node src/index.ts  -- --debug",
+    "start:heroku": "ts-node src/index.ts",
+    "heroku-cleanup": "npx playwright install",
+    "heroku-build": "",
+    "build": "ncc build src/index.ts -m"
   },
   "repository": {
     "type": "git",
