@@ -190,9 +190,10 @@ const startWebHook = async (bot: Telegraf<MyContext>) => {
 	});
 
 	const port = process.env.PORT || 8080;
+	const url = process.env.URL || 'https://bbva-notifier.herokuapp.com';
 
 	try {
-		await bot.telegram.setWebhook(`https://bbva-notifier.herokuapp.com/${SECRET_PATH}`);
+		await bot.telegram.setWebhook(`${url}${SECRET_PATH}`);
 		console.log('Webhook set');
 
 		await fast.listen(port);
