@@ -25,11 +25,11 @@
   },
   "homepage": "https://github.com/AngelMariages/BBVANotifier#readme",
   "devDependencies": {
-    "@types/ioredis": "^4.27.7",
     "@types/node": "^16.10.2",
     "@vercel/ncc": "^0.31.1"
   },
   "dependencies": {
+    "@types/ioredis": "^4.27.7",
     "dotenv": "^10.0.0",
     "fastify": "^3.22.0",
     "ioredis": "^4.27.11",
