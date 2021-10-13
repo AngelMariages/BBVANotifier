@@ -23,9 +23,9 @@ export default class Bot {
 	constructor() {
 		this.bot = new Telegraf<MyContext>(process.env.TELEGRAM_TOKEN);
 		this.session = new RedisSession({
+			// @ts-ignore
 			store: {
-				host: process.env.REDIS_URL || '127.0.0.1',
-				port: 6379
+				url: process.env.REDIS_URL || 'redis://localhost:6379'
 			},
 			getSessionKey: (ctx: MyContext) => ctx.from?.id,
 		});
