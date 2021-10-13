@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node --unhandled-rejections=strict dist/index.js",
     "start:dev": "ts-node src/index.ts",
-    "build": "ncc build src/index.ts -m"
+    "build": "ncc build src/index.ts -m",
+    "heroku-cleanup": "npx playwright install"
   },
   "repository": {
     "type": "git",
