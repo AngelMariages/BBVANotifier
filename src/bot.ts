@@ -123,7 +123,7 @@ export default class Bot {
 
 				const now = new Date();
 
-				now.setHours(12, 30, 0, 0);
+				now.setHours(10, 30, 0, 0);
 				now.setDate(now.getDate() + 1);
 
 				await this.intervalHandler.setInterval(userId, now.getTime());
