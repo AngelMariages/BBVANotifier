@@ -2,7 +2,7 @@ import { ServerResponse } from 'http';
 import { Markup, Telegraf, Context } from 'telegraf';
 import RedisSession from 'telegraf-session-redis';
 import { Message, Update } from 'typegram';
-import { SIX_HOURS } from './constants';
+import { ONE_DAY, SIX_HOURS } from './constants';
 import IntervalHandler from './intervals';
 import { debug } from './logging';
 import { ApiScrapper } from './scrappers/api';
@@ -48,12 +48,12 @@ export default class Bot {
 						this.sendMessageToUser(userId, `Current ${cash}€`);
 
 						await this.intervalHandler.removeInterval(userId);
-						await this.intervalHandler.setInterval(userId, interval.start + SIX_HOURS);
+						await this.intervalHandler.setInterval(userId, interval.start + ONE_DAY);
 					}
 				}
 			}
 
-		}, 1000 * 10);
+		}, 1000 * 60 * 5);
 	}
 
 	private async getCash(): Promise<Number> {
@@ -121,12 +121,16 @@ export default class Bot {
 
 				debug('/updates', ctx.message, 'Right user, setting interval...', `chatId: ${ctx.chat.id}`);
 
-				const interval = Date.now() + SIX_HOURS;
-				await this.intervalHandler.setInterval(userId, interval);
+				const now = new Date();
+
+				now.setHours(12, 30, 0, 0);
+				now.setDate(now.getDate() + 1);
+
+				await this.intervalHandler.setInterval(userId, now.getTime());
 
 				debug('/updates', ctx.message, 'Interval set', `chatId: ${ctx.chat.id}`);
 
-				return await ctx.reply('Updates activated!');
+				return await ctx.reply('Updates activated! Next at: ' + now.toLocaleString('ca-ES', { timeStyle: 'long', dateStyle: 'long' }));
 			}
 
 			debug('/updates', ctx.message, 'Wrong user requested updates', `chatId: ${ctx.chat.id}`);
