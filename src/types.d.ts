@@ -17,7 +17,3 @@ export interface MyContext extends TelegrafContext {
 		bbvaUser?: string;
 	} | null
 }
-
-export interface Intervals {
-	[key: string]: NodeJS.Timeout;
-}

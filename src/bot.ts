@@ -5,20 +5,15 @@ import { Message, Update } from 'typegram';
 import { SIX_HOURS } from './constants';
 import IntervalHandler from './intervals';
 import { debug } from './logging';
-import { Scrapper } from './scrapper';
+import { ApiScrapper } from './scrappers/api';
 import { MyContext } from './types';
 import { crypt, isRightUser } from './utils';
-
-const getCash = async (): Promise<Number> => {
-	const scrapper = new Scrapper(process.env.BBVA_USER, process.env.BBVA_PASSWORD);
-
-	return await scrapper.getAssociatedAccountCash();
-};
 
 export default class Bot {
 	private bot: Telegraf<MyContext>;
 	private session: RedisSession;
 	private intervalHandler: IntervalHandler;
+	private scrapper: ApiScrapper;
 
 	constructor() {
 		this.bot = new Telegraf<MyContext>(process.env.TELEGRAM_TOKEN);
@@ -34,6 +29,8 @@ export default class Bot {
 		this.registerCommands();
 		this.intervalHandler = new IntervalHandler();
 
+		this.scrapper = new ApiScrapper(process.env.BBVA_USER, process.env.BBVA_PASSWORD);
+
 		setInterval(async () => {
 			const intervals = await this.intervalHandler.getAllIntervals();
 
@@ -46,7 +43,7 @@ export default class Bot {
 
 					// @ts-ignore
 					if (isRightUser(session?.bbvaUser)) {
-						const cash = await this.waitForLongTask('Getting cash', userId, getCash());
+						const cash = await this.waitForLongTask('Getting cash', userId, this.getCash());
 
 						this.sendMessageToUser(userId, `Current ${cash}€`);
 
@@ -57,6 +54,10 @@ export default class Bot {
 			}
 
 		}, 1000 * 10);
+	}
+
+	private async getCash(): Promise<Number> {
+		return await this.scrapper.getAssociatedAccountBalance();
 	}
 
 	private sendMessageToUser(userId: number, text: string): Promise<Message.TextMessage> {
@@ -118,8 +119,6 @@ export default class Bot {
 					return ctx.reply('You are already subscribed to updates');
 				}
 
-
-
 				debug('/updates', ctx.message, 'Right user, setting interval...', `chatId: ${ctx.chat.id}`);
 
 				const interval = Date.now() + SIX_HOURS;
@@ -163,7 +162,7 @@ export default class Bot {
 				debug('/now', ctx.message, 'Requested now data', `chatId: ${ctx.chat.id}`);
 
 				const userId = ctx.from?.id;
-				const cash = await this.waitForLongTask('Getting cash', userId, getCash());
+				const cash = await this.waitForLongTask('Getting cash', userId, this.getCash());
 
 				return ctx.reply(`Current ${cash}€`);
 			}

@@ -1,6 +1,6 @@
 import { chromium } from 'playwright-chromium';
 
-export class Scrapper {
+export class PlaywrightScrapper {
 	private readonly user: string;
 	private readonly password: string;
 
@@ -9,7 +9,7 @@ export class Scrapper {
 		this.password = password;
 	}
 
-	public async getAssociatedAccountCash(): Promise<Number> {
+	public async getAssociatedAccountBalance(): Promise<Number> {
 		const browser = await chromium.launch({
 			chromiumSandbox: false
 		});
