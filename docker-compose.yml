@@ -12,13 +12,22 @@ services:
       - .env
     depends_on:
       - redis
-    ports:
-      - 8888:8080
 
   redis:
     restart: always
     image: redis:alpine
     volumes:
       - redis-data:/data
+
+  localtunnel:
+    image: efrecon/localtunnel
+    restart: always
+    links:
+      - bot
+    ports:
+      - 8888:8080
+    command:
+      --local-host bot --port 8080 --subdomain angelmariages
+
 volumes:
   redis-data:
