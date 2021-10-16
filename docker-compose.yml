@@ -10,3 +10,11 @@ services:
       - ./logs:/usr/app/logs
     env_file:
       - .env
+    depends_on:
+      - redis
+    ports:
+      - 8888:8080
+
+  redis:
+    restart: always
+    image: redis:alpine
