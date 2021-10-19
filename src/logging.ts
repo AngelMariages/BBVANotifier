@@ -4,7 +4,7 @@ import { DEBUG_ACTIVE } from './utils';
 const fgGreen = '\x1b[32m';
 const reset = '\x1b[0m';
 
-const LOG_FILE_PATH = `${__dirname}/../logs/${Date.now()}.log`
+const LOG_FILE_PATH = `${process.cwd()}/logs/${Date.now()}.log`
 const LOG_FILE = openSync(LOG_FILE_PATH, 'w');
 
 export const debug = (action: string, telegramMessage: object, ...content: string[]) => {
