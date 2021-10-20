@@ -18,7 +18,7 @@ const startWebHook = async (bot: Bot) => {
 	});
 
 	const port = process.env.PORT || 8080;
-	const url = process.env.URL || 'https://bbva-notifier.herokuapp.com';
+	const url = process.env.URL || 'http://localhost/';
 
 	try {
 		await bot.initializeWebhook(`${url}${SECRET_PATH}`);
