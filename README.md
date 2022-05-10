@@ -26,11 +26,11 @@ When you send the correct BBVA_USER as plain text in the Telegram bot it will au
 
 #### `/now`
 Gets the current balance of the associated account.
-> :warning: If you want to recieve the information of the main account you will need to change this: https://github.com/AngelMariages/BBVANotifier/blob/master/src/scrappers/api.ts#L45
+> :warning: If you want to recieve the information of the main account you will need to change this: https://github.com/AngelMariages/BBVANotifier/blob/e80abb76f987c8d15603b9f0607714b09dd01829/src/scrappers/api.ts#L72-L74
 
 #### `/updates`
 Sets an interval for the current user to recieve updates.
-The interval duration is set here: https://github.com/AngelMariages/BBVANotifier/blob/master/src/bot.ts#L51
+The interval duration is set here: https://github.com/AngelMariages/BBVANotifier/blob/e80abb76f987c8d15603b9f0607714b09dd01829/src/bot.ts#L49
 
 ### `/off`
 Stops recieving updates.
