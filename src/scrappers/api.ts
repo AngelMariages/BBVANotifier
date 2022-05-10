@@ -29,17 +29,29 @@ export class ApiScrapper {
 	}
 
 	public async getAssociatedAccountBalance(): Promise<number> {
-		const auth = await this.getAuth();
+		let auth;
+
+		try {
+			auth = await this.getAuth();
+		} catch (e) {
+			console.log(`[getAssociatedAccountBalance] Error: ${e}`);
+			return 0;
+		}
 
 		if (!auth) {
 			console.log(`No auth for user ${this.user}`);
 
-			return 0.0;
+			return 0;
 		}
 
 		const { authToken, customerId } = auth;
 
-		return await this.getBalance(authToken, customerId);
+		try {
+			return await this.getBalance(authToken, customerId);
+		} catch (e) {
+			console.log(`[getAssociatedAccountBalance] Error: ${e}`);
+			return 0;
+		}
 	}
 
 	private async getBalance(authToken: string, customerId: string): Promise<number> {
@@ -61,8 +73,6 @@ export class ApiScrapper {
 			return acc.familyBalances[0].balance?.amount || 0.0;
 		}
 
-		console.log(`[getBalance] Response status: ${resp.status}`);
-		console.log(`[getBalance] Response headers: ${JSON.stringify(resp.headers)}`);
 		console.log(`[getBalance] Response body: ${JSON.stringify(acc)}`);
 
 		return 0.0;
@@ -71,20 +81,28 @@ export class ApiScrapper {
 	private async getAuth(): Promise<BBVAAuth | undefined> {
 		const postBody = {
 			authentication: {
-				consumerID: "00000001",
+				consumerID: "00000031",
 				authenticationType: "02",
 				userID: `0019-0${this.user}`,
 				authenticationData: [
-					{ authenticationData: [this.password], idAuthenticationData: "password" },
+					{
+						authenticationData: [this.password],
+						idAuthenticationData: "password"
+					},
 				],
 			},
 		};
 
 		const resp = await fetch(
-			"https://www.bbva.es/ASO/TechArchitecture/grantingTickets/V02",
+			"https://servicios.bbva.es/ASO/TechArchitecture/grantingTickets/V02",
 			{
 				headers: {
 					"content-type": "application/json",
+					"origin": "https://movil.bbva.es",
+					"referrer": "https://movil.bbva.es",
+					"cache-control": "no-cache",
+					"content-language": "en-EN",
+					"authority": "servicios.bbva.es",
 				},
 				body: JSON.stringify(postBody),
 				method: "POST",
@@ -94,8 +112,6 @@ export class ApiScrapper {
 		const authToken = resp.headers.get("tsec");
 		const json = await resp.json() as GrantingTicketsResponse;
 
-		console.log(`[getAuth] Response status: ${resp.status}`);
-		console.log(`[getAuth] Response headers: ${JSON.stringify(resp.headers)}`);
 		console.log(`[getAuth] Response body: ${JSON.stringify(json)}`);
 
 		const customerId = json.user?.id || "";
