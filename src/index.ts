@@ -2,19 +2,19 @@ import process from 'process';
 import { config as importConfig } from 'dotenv';
 import fastify from 'fastify';
 import Bot from './bot';
+import { Update } from 'telegraf/typings/core/types/typegram';
 
 const startWebHook = async (bot: Bot) => {
 	const fast = fastify({ logger: true });
 
-	fast.get('/', async (request, reply) => {
+	fast.get('/', async (_, reply) => {
 		reply.send({ hello: 'world' });
 	});
 
 	const SECRET_PATH = `/telegraf/${bot.getSecrethPath()}`;
 
 	fast.post(SECRET_PATH, (req, rep) => {
-		// @ts-ignore
-		bot.handleUpdate(req.body, rep.raw)
+		bot.handleUpdate(req.body as Update, rep.raw)
 	});
 
 	const port = process.env.PORT || 8080;

@@ -12,8 +12,10 @@ declare global {
 	}
 }
 
+export interface MySession {
+	bbvaUser?: string;
+}
+
 export interface MyContext extends TelegrafContext {
-	session: {
-		bbvaUser?: string;
-	} | null
+	session: MySession | null
 }

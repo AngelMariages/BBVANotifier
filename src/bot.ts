@@ -2,11 +2,11 @@ import { ServerResponse } from 'http';
 import { Markup, Telegraf, Context } from 'telegraf';
 import RedisSession from 'telegraf-session-redis';
 import { Message, Update } from 'typegram';
-import { ONE_DAY, SIX_HOURS } from './constants';
+import { ONE_DAY } from './constants';
 import IntervalHandler from './intervals';
 import { debug } from './logging';
 import { ApiScrapper } from './scrappers/api';
-import { MyContext } from './types';
+import { MyContext, MySession } from './types';
 import { crypt, isRightUser } from './utils';
 
 export default class Bot {
@@ -20,7 +20,7 @@ export default class Bot {
 		this.session = new RedisSession({
 			// @ts-ignore
 			store: {
-				url: process.env.REDIS_URL || 'redis://localhost:6379'
+				url: process.env.REDIS_URL || 'redis://localhost:6379'
 			},
 			getSessionKey: (ctx: MyContext) => ctx.from?.id,
 		});
@@ -38,10 +38,8 @@ export default class Bot {
 				if (interval.start < Date.now()) {
 					const userId = interval.userId;
 
-					// @ts-ignore
-					const session = await this.session.getSession(userId as Context<Update>);
+					const session = this.session.getSession(userId as unknown as Context<Update>) as MySession;
 
-					// @ts-ignore
 					if (isRightUser(session?.bbvaUser)) {
 						const cash = await this.waitForLongTask('Getting cash', userId, this.getCash());
 
