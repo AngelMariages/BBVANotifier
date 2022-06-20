@@ -1,0 +1,5 @@
+FROM arm32v7/node:lts-alpine
+
+RUN apk --no-cache add curl
+
+ENTRYPOINT ["docker-entrypoint.sh"]
