@@ -17,7 +17,7 @@ const startWebHook = async (bot: Bot) => {
 		bot.handleUpdate(req.body as Update, rep.raw)
 	});
 
-	const port = process.env.PORT || 8080;
+	const port = process.env.PORT || 8888;
 	const url = process.env.URL || 'http://localhost/';
 
 	try {

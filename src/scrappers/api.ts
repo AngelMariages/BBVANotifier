@@ -1,4 +1,9 @@
 import fetch from 'node-fetch';
+import https from 'https';
+import { Curl, HeaderInfo } from 'node-libcurl';
+
+const httpsAgent = new https.Agent({ keepAlive: true });
+const agent = () => httpsAgent;
 
 type BBVAAuth = {
 	authToken: string;
@@ -63,7 +68,8 @@ export class ApiScrapper {
 					"cache-control": "no-cache",
 					tsec: authToken,
 				},
-				method: "GET"
+				method: "GET",
+				agent,
 			}
 		);
 
@@ -93,24 +99,51 @@ export class ApiScrapper {
 			},
 		};
 
-		const resp = await fetch(
-			"https://servicios.bbva.es/ASO/TechArchitecture/grantingTickets/V02",
-			{
-				headers: {
-					"content-type": "application/json",
-					"origin": "https://movil.bbva.es",
-					"referrer": "https://movil.bbva.es",
-					"cache-control": "no-cache",
-					"content-language": "en-EN",
-					"authority": "servicios.bbva.es",
-				},
-				body: JSON.stringify(postBody),
-				method: "POST",
-			}
-		);
+		console.log(`[getAuth] Post body: ${JSON.stringify(postBody)}`);
 
-		const authToken = resp.headers.get("tsec");
-		const json = await resp.json() as GrantingTicketsResponse;
+		const curl = new Curl();
+		const close = curl.close.bind(curl);
+
+		curl.setOpt(Curl.option.URL, "https://servicios.bbva.es/ASO/TechArchitecture/grantingTickets/V02");
+		curl.setOpt(Curl.option.POST, true);
+		curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify(postBody));
+		curl.setOpt(Curl.option.HTTPHEADER, [
+			"Authority: servicios.bbva.es",
+			"Accept: application/json, text/javascript, */*; q=0.01",
+			"Accept-Language: en-EN",
+			"Cache-Control: no-cache",
+			"Content-Language: en-EN",
+			"Content-Type: application/json",
+			"Origin: https://movil.bbva.es",
+			"Pragma: no-cache",
+			"Referer: https://movil.bbva.es/",
+		]);
+
+		const respPromise: Promise<{ body: string, headers: HeaderInfo }> = new Promise((resolve, reject) => {
+			curl.on("end", (statusCode: number, body: string, headers) => {
+				close();
+				if (Array.isArray(headers) && headers.length > 0) {
+					resolve({ body, headers: headers[0] });
+				} else {
+					resolve({ body, headers: {}});
+				}
+				console.log(`[getAuth] Response status code: ${statusCode}`);
+				console.log(`[getAuth] Response body: ${body}`);
+			});
+
+			curl.on("error", (err: Error) => {
+				close();
+				reject(err)
+				console.log(`[getAuth] Error: ${err}`);
+			});
+		});
+
+		curl.perform();
+
+		const { body, headers } = await respPromise;
+
+		const authToken = headers["tsec"];
+		const json = JSON.parse(body) as GrantingTicketsResponse;
 
 		console.log(`[getAuth] Response body: ${JSON.stringify(json)}`);
 
