@@ -13,6 +13,8 @@ const startWebHook = async (bot: Bot) => {
 
 	const SECRET_PATH = `/telegraf/${bot.getSecrethPath()}`;
 
+	console.log("Listening for POST on:", SECRET_PATH);
+
 	fast.post(SECRET_PATH, (req, rep) => {
 		bot.handleUpdate(req.body as Update, rep.raw)
 	});
