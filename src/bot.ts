@@ -33,6 +33,8 @@ export default class Bot {
 
 		setInterval(async () => {
 			const intervals = await this.intervalHandler.getAllIntervals();
+			
+			console.log('intervals', intervals);
 
 			for (const interval of intervals) {
 				if (interval.start < Date.now()) {
