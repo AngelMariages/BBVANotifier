@@ -31,7 +31,7 @@
   "dependencies": {
     "@types/ioredis": "^4.27.7",
     "@types/node-fetch": "^2.5.12",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.0.1",
     "fastify": "^3.22.0",
     "ioredis": "^4.27.11",
     "node-fetch": "^2.6.5",
