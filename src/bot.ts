@@ -42,8 +42,13 @@ export default class Bot {
 					const userId = interval.userId;
 
 					const session = this.session.getSession(userId as unknown as Context<Update>) as MySession;
+					
+					console.log('session', session);
+					console.log('isRightUSer', isRightUser(session?.bbvaUser));
 
 					if (isRightUser(session?.bbvaUser)) {
+						console.log('session', session);
+
 						const cash = await this.waitForLongTask('Getting cash', userId, this.getCash());
 
 						this.sendMessageToUser(userId, `Current ${cash}€`);
