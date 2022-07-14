@@ -33,22 +33,14 @@ export default class Bot {
 
 		setInterval(async () => {
 			const intervals = await this.intervalHandler.getAllIntervals();
-			
-			console.log('intervals', intervals);
-			console.log('Date.now()', Date.now());
 
 			for (const interval of intervals) {
 				if (interval.start < Date.now()) {
 					const userId = interval.userId;
 
 					const session = await this.session.getSession(userId as unknown as Context<Update>) as MySession;
-					
-					console.log('session', session);
-					console.log('isRightUSer', isRightUser(session?.bbvaUser));
 
 					if (isRightUser(session?.bbvaUser)) {
-						console.log('session', session);
-
 						const cash = await this.waitForLongTask('Getting cash', userId, this.getCash());
 
 						this.sendMessageToUser(userId, `Current ${cash}€`);
@@ -59,7 +51,7 @@ export default class Bot {
 				}
 			}
 
-		}, 1000 * 60 * 2);
+		}, 1000 * 60 * 10);
 	}
 
 	private async getCash(): Promise<Number> {
