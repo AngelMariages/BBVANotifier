@@ -41,7 +41,7 @@ export default class Bot {
 				if (interval.start < Date.now()) {
 					const userId = interval.userId;
 
-					const session = this.session.getSession(userId as unknown as Context<Update>) as MySession;
+					const session = await this.session.getSession(userId as unknown as Context<Update>) as MySession;
 					
 					console.log('session', session);
 					console.log('isRightUSer', isRightUser(session?.bbvaUser));
