@@ -35,6 +35,7 @@ export default class Bot {
 			const intervals = await this.intervalHandler.getAllIntervals();
 			
 			console.log('intervals', intervals);
+			console.log('Date.now()', Date.now());
 
 			for (const interval of intervals) {
 				if (interval.start < Date.now()) {
@@ -53,7 +54,7 @@ export default class Bot {
 				}
 			}
 
-		}, 1000 * 60 * 5);
+		}, 1000 * 60 * 2);
 	}
 
 	private async getCash(): Promise<Number> {
