@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/AngelMariages/BBVANotifier#readme",
   "devDependencies": {
-    "@types/node": "^16.10.2",
+    "@types/node": "^18.0.6",
     "@vercel/ncc": "^0.31.1"
   },
   "dependencies": {
